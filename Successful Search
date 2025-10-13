@@ -1,0 +1,48 @@
+import math
+
+n = 4
+keys = [10, 20, 30, 40]
+p = [0.1, 0.2, 0.4, 0.3]            # successful search probabilities
+q = [0.05, 0.1, 0.05, 0.05, 0.1]     # unsuccessful search probabilities
+
+E = [[0.0 for _ in range(n + 2)] for _ in range(n + 2)]
+W = [[0.0 for _ in range(n + 2)] for _ in range(n + 2)]
+R = [[0 for _ in range(n + 2)] for _ in range(n + 2)]
+
+for i in range(n + 1):
+    E[i][i] = q[i]
+    W[i][i] = q[i]
+    R[i][i] = 0
+
+for length in range(1, n + 1):
+    for i in range(n - length + 1):
+        j = i + length
+        E[i][j] = math.inf
+        W[i][j] = W[i][j - 1] + p[j - 1] + q[j]
+        for r in range(i + 1, j + 1):
+            cost = E[i][r - 1] + E[r][j] + W[i][j]
+            if cost < E[i][j]:
+                E[i][j] = cost
+                R[i][j] = r
+
+min_cost = E[0][n]
+
+print("Weight Matrix (W):")
+for i in range(n + 1):
+    for j in range(n + 1):
+        print(f"{W[i][j]:6.2f}", end=" ")
+    print()
+
+print("\nExpected Cost Matrix (E):")
+for i in range(n + 1):
+    for j in range(n + 1):
+        print(f"{E[i][j]:6.2f}", end=" ")
+    print()
+
+print("\nRoot Matrix (R):")
+for i in range(n + 1):
+    for j in range(n + 1):
+        print(f"{R[i][j]:6}", end=" ")
+    print()
+
+print(f"\nMinimum Expected Cost of OBST: {min_cost:.4f}")
